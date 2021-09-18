@@ -1,0 +1,86 @@
+ <html>
+      <head>
+        <title>OpenLayers Demo</title>
+        <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+        <script>
+    		function init() {
+    			map = new OpenLayers.Map("basicMap"); //create a new map
+    			var mapnik = new OpenLayers.Layer.OSM(); //add an OpenStreetMap layer to have some data in the mapview
+    			map.addLayer(mapnik); //add the OSM layer to the map
+
+    			var markers = new OpenLayers.Layer.Markers( "Markers" ); //add a layer where markers can be put
+    			map.addLayer(markers); //add the markers layer to the current map
+
+    			function createmarker (lon,lat) {
+    				var feature = new OpenLayers.LonLat( lon, lat ) // create features (locations) out of arrays in points
+    						.transform(  //transform the location to the coordinate system of our OpenLayers map
+    							new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+    							map.getProjectionObject() // to Spherical Mercator Projection
+    						);
+    				markers.addMarker(new OpenLayers.Marker(feature)); // Add new features to markers layer
+    			}	
+
+    			var poi = [ // create array with point of interests
+    			[ 11.557617 ,48.092757 ],
+    			[ 8.558350, 50.028917 ],
+    			[ 6.701660, 51.289406 ],
+    			[ 13.337402, 52.496160 ]
+          ];
+
+    			for (var x of poi) { // for each array(object) in array 
+    				createmarker (x[0],x[1]) // create markers
+    			}
+
+    			var extent = map.zoomToExtent(markers.getDataExtent()); // get extent of markers layer
+
+    			function addFeature() {
+    			  var lat = parseFloat(document.getElementById("lat").value); // get value of input lat and parse to float
+    			  var lon = parseFloat(document.getElementById("lon").value); // get value of input lon and parse to float
+
+    			  var newFeature = [ lon, lat ] // create array "newFeature" with lon , lat
+    			  poi.push(newFeature) // add NewFeature to array "poi"
+
+    			  createmarker (lon,lat) // create marker for input lat, lon  
+    			  document.getElementById('poi_added').innerHTML = "Added marker for " + "latitude: " + lat + "; longitude: " + lon; // visual feedback for added marker
+    			}
+
+    			document.getElementById('add_marker').addEventListener('click', addFeature); // execute function "addFeature" when button with id "add_marjer" is clicked
+    		}
+
+    		//  popover coordinates markers 
+        </script> 
+    	<style>
+      /*dein style*/
+    	</style>
+      </head>
+      <body onload="init();">
+    	<div id="wrapper"  >
+    		<div style="width: 100%; height: 80%" id="basicMap"></div>
+    			<div class="add_markers">
+    				<div class="input_markers">	
+    					Add new markers with coordinates in WGS84!
+    					<div class="row">
+    						<div class="col-25">
+    							<label for="lat">Latitude:</label>
+    						</div>
+    						<div class="col-75">
+    							<input type="text" id="lat" name="firstname" placeholder="48.060614">
+    						</div>
+    					</div>
+    					<div class="row">
+    						<div class="col-25">
+    							<label for="lon">Longitude:</label>
+    						</div>
+    						<div class="col-75">
+    							<input type="text" id="lon" name="lastname" placeholder="12.190876">
+    						</div>
+    					</div>
+    					<button id="add_marker" class="button">Add marker!</button>
+    					<div id="poi_added" class="poi_added"></div>
+    					</div>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+      </body>
+    </html>
